@@ -3,7 +3,7 @@
  */
 type PluginCallback = () => any;
 /**
- * - Called after the engine starts, can be async
+ * - Called after the  starts, can be async
  */
 type GameInitCallback = () => void | Promise<void>;
 /**

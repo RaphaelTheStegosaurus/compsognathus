@@ -1,2 +1,5 @@
 /node_modules
 /node_modules/*
+types.d.ts 
+tsconfig.json 
+app.ts 

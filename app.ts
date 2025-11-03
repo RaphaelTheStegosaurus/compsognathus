@@ -1,5 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////////
+class Player extends EngineObject {
+  constructor() {
+    super(vec2(0, 0), vec2(1, 1), null, 0, new Color(0, 1, 1));
+  }
+  update(): void {
+    const moveInput = keyDirection();
+  }
+}
 function gameInit() {
+  new Player();
   // called once after the engine starts up
   // setup the game
 }
