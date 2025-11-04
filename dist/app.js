@@ -9,29 +9,25 @@ class Player extends EngineObject {
   update() {
     this.inputs();
     this.setCamera();
+    debugText(`Orientation ${this.orientation}`, vec2(this.pos.x, 5));
   }
   inputs() {
     debugText(`position ${this.pos}`, vec2(this.pos.x, 10));
-
+    let move = vec2(0, 0);
+    let isJumping = false;
     if (isTouchDevice) {
       touchGamepadEnable = true;
-      const direction = gamepadIsDown(0);
-      const stick = gamepadStick(0);
-      this.velocity.x = stick.x;
-      if (this.groundObject && direction) {
-        this.velocity.y = 0.75;
-      }
+      isJumping = gamepadIsDown(0);
+      move = gamepadStick(0);
     } else {
-      const moveInput = keyDirection();
-      // console.log(keyIsDown(1));
-      // const key = keyIsDown("ControlLeft");
-      // const key = keyWasPressed("Space");
-      // debugText(`key ${key}`, vec2(this.pos.x, 5));
-      this.velocity.x += moveInput.x * (this.groundObject ? 0.1 : 0.01);
-      if (this.groundObject && moveInput.y > 0) {
-        this.velocity.y = 0.75;
-      }
+      move = keyDirection();
+      isJumping = keyIsDown("Space");
     }
+    this.velocity.x += move.x * (this.groundObject ? 0.1 : 0.01);
+    if (this.groundObject && isJumping) {
+      this.velocity.y = 0.75;
+    }
+    this.turnOrientation(move.x);
   }
   turnOrientation(directionX) {
     if (directionX == 0) {
