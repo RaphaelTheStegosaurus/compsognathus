@@ -2,16 +2,43 @@
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
   constructor() {
-    super(vec2(50, 10), vec2(1, 1), null, 0, GREEN);
+    super(vec2(50, 10), vec2(2, 6), null, 0, GREEN);
     this.setCollision();
+    this.orientation = 1;
   }
   update() {
-    const moveInput = keyDirection();
-    this.velocity.x += moveInput.x * (this.groundObject ? 0.1 : 0.01);
-    if (this.groundObject && moveInput.y > 0) {
-      this.velocity.y = 0.75;
-    }
+    this.inputs();
     this.setCamera();
+  }
+  inputs() {
+    debugText(`position ${this.pos}`, vec2(this.pos.x, 10));
+
+    if (isTouchDevice) {
+      touchGamepadEnable = true;
+      const direction = gamepadIsDown(0);
+      const stick = gamepadStick(0);
+      this.velocity.x = stick.x;
+      if (this.groundObject && direction) {
+        this.velocity.y = 0.75;
+      }
+    } else {
+      const moveInput = keyDirection();
+      // console.log(keyIsDown(1));
+      // const key = keyIsDown("ControlLeft");
+      // const key = keyWasPressed("Space");
+      // debugText(`key ${key}`, vec2(this.pos.x, 5));
+      this.velocity.x += moveInput.x * (this.groundObject ? 0.1 : 0.01);
+      if (this.groundObject && moveInput.y > 0) {
+        this.velocity.y = 0.75;
+      }
+    }
+  }
+  turnOrientation(directionX) {
+    if (directionX == 0) {
+      return;
+    }
+    this.orientation = directionX;
+    return;
   }
   setCamera() {
     cameraPos.x = this.pos.x;
@@ -62,13 +89,26 @@ class GroundManager extends EngineObject {
     newChunk.redraw();
   }
 }
+class Compsognathus extends EngineObject {
+  constructor(pos, player) {
+    super(pos, vec2(1, 1));
+    this.Color = RED;
+    this.setCollision();
+    this.player = player;
+  }
+  update() {}
+  follow() {}
+  keepDistance() {}
+  attack() {}
+}
 function gameInit() {
-  // called once after the engine starts up
-  // setup the game
   gravity.y = -0.05;
   new GroundManager();
-  new Player();
+  const player = new Player();
+  new Compsognathus(vec2(40, 10), player);
   canvasClearColor = hsl(0.6, 0.5, 0.5);
+
+  console.log(isTouchDevice);
 }
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
