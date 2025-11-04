@@ -4,12 +4,12 @@ class Player extends EngineObject {
   constructor() {
     super(vec2(50, 10), vec2(2, 6), null, 0, GREEN);
     this.setCollision();
-    this.orientation = 1;
+    this.Direction = 1;
   }
   update() {
     this.inputs();
     this.setCamera();
-    debugText(`Orientation ${this.orientation}`, vec2(this.pos.x, 5));
+    debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
   }
   inputs() {
     debugText(`position ${this.pos}`, vec2(this.pos.x, 10));
@@ -27,13 +27,13 @@ class Player extends EngineObject {
     if (this.groundObject && isJumping) {
       this.velocity.y = 0.75;
     }
-    this.turnOrientation(move.x);
+    this.turnDirection(move.x);
   }
-  turnOrientation(directionX) {
+  turnDirection(directionX) {
     if (directionX == 0) {
       return;
     }
-    this.orientation = directionX < 0 ? -1 : 1;
+    this.Direction = directionX < 0 ? -1 : 1;
     return;
   }
   setCamera() {
@@ -88,11 +88,13 @@ class GroundManager extends EngineObject {
 class Compsognathus extends EngineObject {
   constructor(pos, player) {
     super(pos, vec2(1, 1));
-    this.Color = RED;
+    this.color = RED;
     this.setCollision();
     this.player = player;
   }
-  update() {}
+  update() {
+    this.follow();
+  }
   follow() {}
   keepDistance() {}
   attack() {}
