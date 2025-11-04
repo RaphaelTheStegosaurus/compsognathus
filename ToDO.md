@@ -1,0 +1,16 @@
+# To-Do List
+- [ ] Terreno
+  - [ ] Creación del terreno
+  - [ ] Generación de terreno aleatoriamente
+- [ ] Player
+  - [ ] Instancia del Jugador
+  - [ ] Movimiento del Jugador
+- [ ] Compsognathus
+  - [ ] Creación del Objeto
+  - [ ] Asignación de comportamiento
+  - [ ] Asignación de colisiones
+- [ ] Spawner de Compsognathus
+- [ ] HUD
+- [ ] Menus
+- [ ] Sprites
+- [ ] Historia

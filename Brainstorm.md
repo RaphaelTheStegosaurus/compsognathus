@@ -1,0 +1,8 @@
+# BrainStorm
+## Idea 01
+> El personaje sera un humano que se perdió en la selva donde hay compsognathus un pequeño dinosaurio que se suben arriba de el y le va bajando energía de poco en poco si tiene uno solo sera poco pero si son mas le bajaran mas hasta derivarlo al suelo y si este esta en el suelo lo empezaran a atacar bajándole salud y si este llega a 0 muere.
+>De vista estaba pensando en aérea para que el personaje pudiese moverse mas por el escenario pero sino sera en vista 2d lateral para poder aplicar efecto parallax al escenario
+## Idea 02 
+> El personaje sera un dinosaurio compsognathus el cual esta en la selva donde hay mas presas y depredadores que para vencerlas tendrá que encontrar a mas de su especie para formar manadas de ellos y asi luchar con las presas o depredadores que hay en la selva, entre cada enfrentamiento estos tendrán una barra de vida pero también algunos atacaran a la manada lo cual podrán bajar  la cantidad de la manada y tendrán que buscar a mas de tu especie para superar las pruebas de sobrevivir o morir. Cada presa que se venza es mas seguro que se cree como un nido de tu especie donde es seguro encontrar a mas de tu especie pero aveces estos serán atacados por depredadores que deberás enfrentarlos a vencerlos, aumentarlos o aveces escapar para que sobreviva la especie. 
+> Sera basado en el Triassic donde no habrá grandes dromeosauridos o dinosaurios teropodos pero si habrá dimetrodones, protococodrilos, protomamiferos y protodinosaurios ademas de insectos
+> Este sera vista aerea estoy pensando en vista octagonal
