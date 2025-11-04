@@ -100,21 +100,29 @@ class Compsognathus extends EngineObject {
       if (this.Player.Direction > 0) {
         this.follow();
       } else {
-        this.keepDistance();
+        this.keepDistance(Distance);
       }
     } else if (Distance > 0) {
       if (this.Player.Direction < 0) {
         this.follow();
+      } else {
+        this.keepDistance(Distance);
       }
     } else {
-      this.keepDistance();
     }
   }
   follow() {
     const dirToPlayer = sign(this.Player.pos.x - this.pos.x);
     this.velocity.x = dirToPlayer * this.ChaseSpeed;
   }
-  keepDistance() {}
+  keepDistance(_Distance) {
+    if (Math.abs(_Distance) < 10) {
+      const runToPlayer = sign(this.Player.pos.x - this.pos.x);
+      this.velocity.x = -1 * (runToPlayer * this.ChaseSpeed);
+    } else {
+      this.velocity.x = 0;
+    }
+  }
   attack() {}
 }
 function gameInit() {

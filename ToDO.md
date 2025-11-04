@@ -10,7 +10,7 @@
   - [ ] Asignación de comportamiento
     - [x] Hacer que siga al jugador mientras este de espalda
     - [ ] Cuando este cerca del jugador si esta de espalda saltara sobre el 
-    - [ ] Cuando este cerca del jugador si esta de frente este retrocedera a cierta distancia cada vez que el jugador se acerque 
+    - [x] Cuando este cerca del jugador si esta de frente este retrocedera a cierta distancia cada vez que el jugador se acerque 
     - [ ] Si el jugador lo alcanza este lo lanzara de una patada y este se perdera en la selva
   - [ ] Asignación de colisiones
 - [ ] Spawner de Compsognathus
