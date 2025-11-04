@@ -33,7 +33,7 @@ class Player extends EngineObject {
     if (directionX == 0) {
       return;
     }
-    this.orientation = directionX;
+    this.orientation = directionX < 0 ? -1 : 1;
     return;
   }
   setCamera() {
