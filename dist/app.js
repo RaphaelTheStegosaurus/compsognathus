@@ -90,12 +90,30 @@ class Compsognathus extends EngineObject {
     super(pos, vec2(1, 1));
     this.color = RED;
     this.setCollision();
-    this.player = player;
+    this.Player = player;
+    this.Direction = 1;
+    this.ChaseSpeed = 0.08;
   }
   update() {
-    this.follow();
+    const Distance = this.pos.x - this.Player.pos.x;
+    if (Distance < 0) {
+      if (this.Player.Direction > 0) {
+        this.follow();
+      } else {
+        this.keepDistance();
+      }
+    } else if (Distance > 0) {
+      if (this.Player.Direction < 0) {
+        this.follow();
+      }
+    } else {
+      this.keepDistance();
+    }
   }
-  follow() {}
+  follow() {
+    const dirToPlayer = sign(this.Player.pos.x - this.pos.x);
+    this.velocity.x = dirToPlayer * this.ChaseSpeed;
+  }
   keepDistance() {}
   attack() {}
 }
