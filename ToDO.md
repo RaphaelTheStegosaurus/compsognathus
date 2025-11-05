@@ -1,6 +1,6 @@
 # To-Do List
 - [ ] Terreno
-  - [ ] Creación del terreno
+  - [x] Creación del terreno
   - [ ] Generación de terreno aleatoriamente
 - [ ] Player
   - [x] Instancia del Jugador
@@ -15,6 +15,9 @@
   - [ ] Asignación de colisiones
 - [ ] Spawner de Compsognathus
 - [ ] HUD
+  - [ ] Barra de Energia del Jugador
+  - [ ] Barra de Vida del Jugador
+  - [ ] Barras deben indicar la salud del jugador
 - [ ] Menus
 - [ ] Sprites
 - [ ] Historia

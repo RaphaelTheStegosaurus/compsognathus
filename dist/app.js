@@ -5,11 +5,15 @@ class Player extends EngineObject {
     super(vec2(50, 10), vec2(2, 6), null, 0, GREEN);
     this.setCollision();
     this.Direction = 1;
+    this.Health = 100;
+    this.Stamina = 100;
   }
   update() {
     this.inputs();
     this.setCamera();
     debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
+    debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
+    // console.log(mouseWheel);
   }
   inputs() {
     debugText(`position ${this.pos}`, vec2(this.pos.x, 10));
@@ -110,7 +114,7 @@ class Compsognathus extends EngineObject {
       if (Math.abs(_Distance) >= 10) {
         this.velocity.x = dirToPlayer * this.ChaseSpeed;
       } else {
-        this.velocity.x = dirToPlayer * this.ChaseSpeed * -1;
+        this.velocity.x = dirToPlayer * (1.5 * this.ChaseSpeed) * -1;
       }
     } else {
       this.velocity.x = dirToPlayer * this.ChaseSpeed;
@@ -118,14 +122,28 @@ class Compsognathus extends EngineObject {
   }
   attack() {}
 }
+class BarComponent extends UIScrollbar {
+  constructor(pos, size, value, color) {
+    super(pos, size, value);
+    this.color = color;
+    this.interactive = false;
+  }
+}
 function gameInit() {
+  new UISystemPlugin();
+  const barHealth = new BarComponent(vec2(200, 150), vec2(300, 20), 0.5, RED);
+  const barStamina = new BarComponent(
+    vec2(950, 150),
+    vec2(300, 20),
+    0.5,
+    GREEN
+  );
+  //[ ] LittleJs no tiene metodon para ubicar ui pero se basa en pixeles de la pantalla no en el pos global del engine
   gravity.y = -0.05;
   new GroundManager();
   const player = new Player();
   new Compsognathus(vec2(40, 10), player);
   canvasClearColor = hsl(0.6, 0.5, 0.5);
-
-  console.log(isTouchDevice);
 }
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
