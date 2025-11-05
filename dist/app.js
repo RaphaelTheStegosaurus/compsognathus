@@ -1,6 +1,27 @@
 "use strict";
 const pageWidth = window.innerWidth;
 const pageHeight = window.innerHeight;
+const ScrollBarSize = { x: (pageWidth / 10) * 4, y: (pageHeight / 100) * 4 };
+function getPageSize() {
+  return { x: window.innerWidth, y: window.innerHeight };
+}
+function getCellSize() {
+  const pageSize = getPageSize();
+  const cols_by_page = 10;
+  const rows_by_page = 100;
+  return {
+    width: pageSize.x / cols_by_page,
+    height: pageSize.y / rows_by_page,
+  };
+}
+function getPosition(xPosition, yPosition) {
+  const cellSize = getCellSize();
+  return { x: cellSize.width * xPosition, y: cellSize.height * yPosition };
+}
+
+function getScrollBarSize(width, height, unityX, unityY) {
+  return { width: (width / 10) * unityX, height: (height / 100) * unityY };
+}
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
   constructor() {
@@ -9,10 +30,14 @@ class Player extends EngineObject {
     this.Direction = 1;
     this.Health = 100;
     this.Stamina = 100;
+    this.HealthBar = new BarComponent({ x: 5, y: 5 }, RED);
+    this.StaminaBar = new BarComponent({ x: 5, y: 12 }, GREEN);
   }
   update() {
     this.inputs();
     this.setCamera();
+    this.StaminaBar.adjustValue(this.Stamina);
+    this.HealthBar.adjustValue(this.Health);
     debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
     debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
     // console.log(mouseWheel);
@@ -125,26 +150,32 @@ class Compsognathus extends EngineObject {
   attack() {}
 }
 class BarComponent extends UIScrollbar {
-  constructor(pos, size, value, color) {
-    super(pos, size, value);
+  constructor(Coords, color) {
+    super(vec2(0, 0), vec2(0, 0));
     this.color = color;
     this.interactive = false;
+    this.resize();
+    this.Coords = Coords;
+  }
+  update() {
+    this.resize();
+    this.reposition();
+  }
+  resize() {
+    const size = getPosition(4, 4);
+    this.size = vec2(size.x, size.y);
+  }
+  reposition() {
+    const position = getPosition(this.Coords.x, this.Coords.y);
+    this.pos = vec2(position.x, position.y);
+  }
+  adjustValue(value) {
+    this.value = parseFloat(value / 100).toFixed(2);
   }
 }
 function gameInit() {
   new UISystemPlugin();
-  const barHealth = new BarComponent(
-    vec2((pageWidth / 10) * 5, 100),
-    vec2((pageWidth / 10) * 4, 20),
-    0.5,
-    RED
-  );
-  const barStamina = new BarComponent(
-    vec2((pageWidth / 10) * 5, 200),
-    vec2((pageWidth / 10) * 4, 20),
-    0.5,
-    GREEN
-  );
+
   //[ ] LittleJs no tiene metodon para ubicar ui pero se basa en pixeles de la pantalla no en el pos global del engine
   gravity.y = -0.05;
   new GroundManager();
