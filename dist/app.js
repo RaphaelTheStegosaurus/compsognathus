@@ -1,4 +1,6 @@
 "use strict";
+const pageWidth = window.innerWidth;
+const pageHeight = window.innerHeight;
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
   constructor() {
@@ -131,10 +133,15 @@ class BarComponent extends UIScrollbar {
 }
 function gameInit() {
   new UISystemPlugin();
-  const barHealth = new BarComponent(vec2(200, 150), vec2(300, 20), 0.5, RED);
+  const barHealth = new BarComponent(
+    vec2((pageWidth / 10) * 5, 100),
+    vec2((pageWidth / 10) * 4, 20),
+    0.5,
+    RED
+  );
   const barStamina = new BarComponent(
-    vec2(950, 150),
-    vec2(300, 20),
+    vec2((pageWidth / 10) * 5, 200),
+    vec2((pageWidth / 10) * 4, 20),
     0.5,
     GREEN
   );
