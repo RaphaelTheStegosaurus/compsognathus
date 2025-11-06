@@ -22,3 +22,7 @@
 - [ ] Menus
 - [ ] Sprites
 - [ ] Historia
+
+
+## Bugs
+- [ ] El compsognatus cuando saltas sobre el desaparece

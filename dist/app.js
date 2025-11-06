@@ -1,4 +1,5 @@
 "use strict";
+
 const pageWidth = window.innerWidth;
 const pageHeight = window.innerHeight;
 const ScrollBarSize = { x: (pageWidth / 10) * 4, y: (pageHeight / 100) * 4 };
@@ -24,6 +25,15 @@ function getScrollBarSize(width, height, unityX, unityY) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
+  static StateList = {
+    STANDING: "StandingStill",
+    JUMPING: "Jumping",
+    FALLING: "Falling",
+    RUNNING: "Running",
+    RUNNING_DIFFICULT: "RunningWithDifficult",
+    TRIPPING: "TrippingToTheGround",
+    BEING_ATTACKED: "BeingAttacked",
+  };
   constructor() {
     super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
     this.setCollision();
@@ -35,6 +45,7 @@ class Player extends EngineObject {
     this.NumberOfCompsognathusAboveYou = 0;
     this.TimerInterval = 2;
     this.Timer = this.TimerInterval;
+    this.State = Player.StateList.STANDING;
     this.angle = 0;
     this.Sprite = new SpritePlayer(this.pos, vec2(2, 6), 0); //1.57 es -90
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
@@ -48,7 +59,9 @@ class Player extends EngineObject {
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
 
-    debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
+    // debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
+    debugText(`State ${this.State}`, vec2(this.pos.x, 10));
+    debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
     debugText(
       `Compsognathus ${this.NumberOfCompsognathusAboveYou}`,
       vec2(this.pos.x, 8)
@@ -71,10 +84,27 @@ class Player extends EngineObject {
       move = keyDirection();
       isJumping = keyIsDown("Space");
     }
+
     this.velocity.x += move.x * (this.groundObject ? 0.1 : 0.01);
+
     if (this.groundObject && isJumping) {
       this.velocity.y = 0.75;
+      this.State = Player.StateList.JUMPING;
     }
+    if (this.groundObject) {
+      if (move.x !== 0) {
+        this.State = Player.StateList.RUNNING;
+      } else if (!isJumping) {
+        this.State = Player.StateList.STANDING;
+      }
+    } else {
+      if (this.velocity.y > 0.05) {
+        this.State = Player.StateList.JUMPING;
+      } else if (this.velocity.y < -0.05) {
+        this.State = Player.StateList.FALLING;
+      }
+    }
+
     this.turnDirection(move.x);
   }
   turnDirection(directionX) {
@@ -165,27 +195,32 @@ class Compsognathus extends EngineObject {
     this.Status = "Follow";
   }
   update() {
-    debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 10));
+    // debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 10));
 
     this.movements();
   }
   movements() {
-    const Value = this.pos.x - this.Player.pos.x;
-    const Distance = Math.abs(Value);
+    const Distance = Math.abs(this.GetValueDistance());
     const dirToPlayer = sign(this.Player.pos.x - this.pos.x);
-    const IsItBehindHim =
-      (Value < 0 && this.Player.Direction > 0) ||
-      (Value > 0 && this.Player.Direction < 0);
-    if (IsItBehindHim) {
+    if (this.IsItBehindHim()) {
       this.follow(dirToPlayer, Distance);
     } else {
       this.keepDistance(dirToPlayer, Distance);
     }
   }
+  GetValueDistance() {
+    return this.pos.x - this.Player.pos.x;
+  }
+  IsItBehindHim() {
+    return (
+      (this.GetValueDistance() < 0 && this.Player.Direction > 0) ||
+      (this.GetValueDistance() > 0 && this.Player.Direction < 0)
+    );
+  }
   follow(moveVector, _Distance) {
     this.Status = "Follow";
     this.velocity.x = moveVector * this.ChaseSpeed;
-    if (_Distance < this.size.x * 2) {
+    if (_Distance < this.size.x * 2 && this.IsItBehindHim()) {
       this.attack();
     }
   }
