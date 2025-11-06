@@ -39,11 +39,9 @@ class Player extends EngineObject {
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
     debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
-    debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
-    // console.log(mouseWheel);
+    // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
   }
   inputs() {
-    debugText(`position ${this.pos}`, vec2(this.pos.x, 10));
     let move = vec2(0, 0);
     let isJumping = false;
     if (isTouchDevice) {
@@ -124,27 +122,39 @@ class Compsognathus extends EngineObject {
     this.Player = player;
     this.Direction = 1;
     this.ChaseSpeed = 0.08;
+    this.Status = "Follow";
   }
   update() {
-    this.follow();
+    debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 10));
+    this.movements();
   }
-  follow() {
-    const Distance = this.pos.x - this.Player.pos.x;
-    this.keepDistance(Distance);
-  }
-  keepDistance(_Distance) {
+  movements() {
+    const Value = this.pos.x - this.Player.pos.x;
+    const Distance = Math.abs(Value);
     const dirToPlayer = sign(this.Player.pos.x - this.pos.x);
-    const CanFollowHim =
-      (_Distance < 0 && this.Player.Direction > 0) ||
-      (_Distance > 0 && this.Player.Direction < 0);
-    if (!CanFollowHim) {
-      if (Math.abs(_Distance) >= 10) {
-        this.velocity.x = dirToPlayer * this.ChaseSpeed;
-      } else {
-        this.velocity.x = dirToPlayer * (1.5 * this.ChaseSpeed) * -1;
-      }
+    const IsItBehindHim =
+      (Value < 0 && this.Player.Direction > 0) ||
+      (Value > 0 && this.Player.Direction < 0);
+    if (IsItBehindHim) {
+      this.follow(dirToPlayer);
     } else {
-      this.velocity.x = dirToPlayer * this.ChaseSpeed;
+      this.keepDistance(dirToPlayer, Distance);
+    }
+  }
+  follow(moveVector) {
+    this.Status = "Follow";
+    this.velocity.x = moveVector * this.ChaseSpeed;
+  }
+
+  keepDistance(moveVector, Distance) {
+    if (Distance > 10) {
+      this.follow(moveVector);
+    } else if (Distance > 9) {
+      this.Status = "Stay Front You";
+      this.velocity.x = 0;
+    } else {
+      this.Status = "Keep Distance";
+      this.velocity.x = moveVector * (1.5 * this.ChaseSpeed) * -1;
     }
   }
   attack() {}
