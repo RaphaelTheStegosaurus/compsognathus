@@ -25,21 +25,40 @@ function getScrollBarSize(width, height, unityX, unityY) {
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
   constructor() {
-    super(vec2(50, 10), vec2(2, 6), null, 0, GREEN);
+    super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
     this.setCollision();
     this.Direction = 1;
     this.Health = 100;
     this.Stamina = 100;
     this.HealthBar = new BarComponent({ x: 5, y: 5 }, RED);
     this.StaminaBar = new BarComponent({ x: 5, y: 12 }, GREEN);
+    this.NumberOfCompsognathusAboveYou = 0;
+    this.TimerInterval = 2;
+    this.Timer = this.TimerInterval;
+    this.angle = 0;
+    this.Sprite = new SpritePlayer(this.pos, vec2(2, 6), 0); //1.57 es -90
+    // this.angleVelocity = 0.001;//agrega momento angular osea gira
+    // this.localAngle = ;
   }
   update() {
+    this.settingSprites();
     this.inputs();
     this.setCamera();
+
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
+
     debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
+    debugText(
+      `Compsognathus ${this.NumberOfCompsognathusAboveYou}`,
+      vec2(this.pos.x, 8)
+    );
+    this.restStamina();
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
+  }
+  settingSprites() {
+    this.Sprite.mirror = this.Direction > 0 ? true : false;
+    this.Sprite.pos = vec2(this.pos.x, this.pos.y + 2);
   }
   inputs() {
     let move = vec2(0, 0);
@@ -72,6 +91,27 @@ class Player extends EngineObject {
     } else {
       cameraPos.y = this.pos.y;
     }
+  }
+  addCompsognathusAboveYou() {
+    this.NumberOfCompsognathusAboveYou = this.NumberOfCompsognathusAboveYou + 1;
+  }
+  restStamina() {
+    this.Timer -= timeDelta;
+    if (this.Timer < 0) {
+      if (this.Stamina > 0) {
+        this.Stamina -= this.NumberOfCompsognathusAboveYou;
+      }
+      this.Timer = this.TimerInterval;
+    }
+  }
+}
+class SpritePlayer extends EngineObject {
+  constructor(pos, size, angle) {
+    super(pos, size);
+    this.tileInfo = new TileInfo(vec2(0, 0), vec2(47, 79), 1);
+    this.angle = angle;
+    this.mass = 0;
+    this.collide = false;
   }
 }
 class GroundManager extends EngineObject {
@@ -163,6 +203,8 @@ class Compsognathus extends EngineObject {
   }
   attack() {
     this.Status = "Its Attacking You";
+    this.Player.addCompsognathusAboveYou();
+    this.destroy();
   }
 }
 class BarComponent extends UIScrollbar {
@@ -224,4 +266,5 @@ function gameRenderPost() {
 // Startup LittleJS Engine
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
   "../media/protp-Gnd.png",
+  "../media/sample.png",
 ]);

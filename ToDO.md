@@ -5,6 +5,7 @@
 - [ ] Player
   - [x] Instancia del Jugador
   - [x] Movimiento del Jugador
+  - [ ] Crea una capa dibujar al sprite que tome los vectores del personaje y cuando caiga este gire y baje sin afectar el collider 
 - [ ] Compsognathus
   - [x] Creación del Objeto
   - [ ] Asignación de comportamiento
@@ -15,9 +16,9 @@
   - [ ] Asignación de colisiones
 - [ ] Spawner de Compsognathus
 - [ ] HUD
-  - [ ] Barra de Energia del Jugador
-  - [ ] Barra de Vida del Jugador
-  - [ ] Barras deben indicar la salud del jugador
+  - [x] Barra de Energia del Jugador
+  - [x] Barra de Vida del Jugador
+  - [x] Barras deben indicar la salud del jugador
 - [ ] Menus
 - [ ] Sprites
 - [ ] Historia
