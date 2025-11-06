@@ -126,6 +126,7 @@ class Compsognathus extends EngineObject {
   }
   update() {
     debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 10));
+
     this.movements();
   }
   movements() {
@@ -136,20 +137,23 @@ class Compsognathus extends EngineObject {
       (Value < 0 && this.Player.Direction > 0) ||
       (Value > 0 && this.Player.Direction < 0);
     if (IsItBehindHim) {
-      this.follow(dirToPlayer);
+      this.follow(dirToPlayer, Distance);
     } else {
       this.keepDistance(dirToPlayer, Distance);
     }
   }
-  follow(moveVector) {
+  follow(moveVector, _Distance) {
     this.Status = "Follow";
     this.velocity.x = moveVector * this.ChaseSpeed;
+    if (_Distance < this.size.x * 2) {
+      this.attack();
+    }
   }
 
-  keepDistance(moveVector, Distance) {
-    if (Distance > 10) {
-      this.follow(moveVector);
-    } else if (Distance > 9) {
+  keepDistance(moveVector, _Distance) {
+    if (_Distance > 10) {
+      this.follow(moveVector, _Distance);
+    } else if (_Distance > 9) {
       this.Status = "Stay Front You";
       this.velocity.x = 0;
     } else {
@@ -157,7 +161,9 @@ class Compsognathus extends EngineObject {
       this.velocity.x = moveVector * (1.5 * this.ChaseSpeed) * -1;
     }
   }
-  attack() {}
+  attack() {
+    this.Status = "Its Attacking You";
+  }
 }
 class BarComponent extends UIScrollbar {
   constructor(Coords, color) {
