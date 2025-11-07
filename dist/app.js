@@ -33,6 +33,8 @@ class Player extends EngineObject {
     RUNNING_DIFFICULT: "RunningWithDifficult",
     TRIPPING: "TrippingToTheGround",
     BEING_ATTACKED: "BeingAttacked",
+    LIFTING_UP: "LiftingUp",
+    ATTACKING: "Attacking",
   };
   constructor() {
     super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
@@ -47,7 +49,7 @@ class Player extends EngineObject {
     this.Timer = this.TimerInterval;
     this.State = Player.StateList.STANDING;
     this.angle = 0;
-    this.Sprite = new SpritePlayer(this.pos, vec2(2, 6), 0); //1.57 es -90
+    this.Sprite = new SpritePlayer(this.pos, vec2(2, 6)); //1.57 es -90
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
     // this.localAngle = ;
   }
@@ -67,12 +69,23 @@ class Player extends EngineObject {
       vec2(this.pos.x, 8)
     );
     this.restStamina();
+    this.movement();
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
+  }
+  run() {}
+  jump() {}
+  attack() {}
+  shake() {}
+  movement() {
+    if (this.State == Player.StateList.TRIPPING) {
+      this.trippingToTheGround();
+    }
   }
   settingSprites() {
     this.Sprite.mirror = this.Direction > 0 ? true : false;
     this.Sprite.pos = vec2(this.pos.x, this.pos.y + 2);
   }
+  trippingToTheGround() {}
   inputs() {
     let move = vec2(0, 0);
     let isJumping = false;
@@ -130,16 +143,17 @@ class Player extends EngineObject {
     if (this.Timer < 0) {
       if (this.Stamina > 0) {
         this.Stamina -= this.NumberOfCompsognathusAboveYou;
+      } else {
+        this.State = Player.StateList.TRIPPING;
       }
       this.Timer = this.TimerInterval;
     }
   }
 }
 class SpritePlayer extends EngineObject {
-  constructor(pos, size, angle) {
+  constructor(pos, size) {
     super(pos, size);
     this.tileInfo = new TileInfo(vec2(0, 0), vec2(47, 79), 1);
-    this.angle = angle;
     this.mass = 0;
     this.collide = false;
   }
@@ -195,7 +209,7 @@ class Compsognathus extends EngineObject {
     this.Status = "Follow";
   }
   update() {
-    // debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 10));
+    debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 12));
 
     this.movements();
   }
@@ -217,10 +231,19 @@ class Compsognathus extends EngineObject {
       (this.GetValueDistance() > 0 && this.Player.Direction < 0)
     );
   }
+  checkIfPlayerIsNotJumpingOrAttacking() {
+    return !(
+      this.Player.State == Player.StateList.JUMPING ||
+      this.Player.State == Player.StateList.FALLING
+    );
+  }
   follow(moveVector, _Distance) {
     this.Status = "Follow";
     this.velocity.x = moveVector * this.ChaseSpeed;
-    if (_Distance < this.size.x * 2 && this.IsItBehindHim()) {
+    if (
+      _Distance < this.size.x * 2 &&
+      this.checkIfPlayerIsNotJumpingOrAttacking()
+    ) {
       this.attack();
     }
   }
@@ -274,6 +297,8 @@ function gameInit() {
   new GroundManager();
   const player = new Player();
   new Compsognathus(vec2(40, 10), player);
+  new Compsognathus(vec2(50, 10), player);
+  new Compsognathus(vec2(60, 10), player);
   canvasClearColor = hsl(0.6, 0.5, 0.5);
 }
 ///////////////////////////////////////////////////////////////////////////////

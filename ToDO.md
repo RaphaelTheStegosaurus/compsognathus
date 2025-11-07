@@ -5,7 +5,7 @@
 - [ ] Player
   - [x] Instancia del Jugador
   - [x] Movimiento del Jugador
-  - [ ] Crea una capa dibujar al sprite que tome los vectores del personaje y cuando caiga este gire y baje sin afectar el collider 
+  - [x] Crea una capa dibujar al sprite que tome los vectores del personaje y cuando caiga este gire y baje sin afectar el collider 
 - [ ] Compsognathus
   - [x] Creación del Objeto
   - [ ] Asignación de comportamiento
@@ -25,4 +25,4 @@
 
 
 ## Bugs
-- [ ] El compsognatus cuando saltas sobre el desaparece
+- [x] El compsognatus cuando saltas sobre el desaparece
