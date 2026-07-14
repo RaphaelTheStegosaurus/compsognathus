@@ -27,6 +27,7 @@ function getScrollBarSize(width, height, unityX, unityY) {
 class Player extends EngineObject {
   static StateList = {
     STANDING: "StandingStill",
+    STANDING_DIFFICULT: "StandingStillWithDifficult",
     JUMPING: "Jumping",
     FALLING: "Falling",
     RUNNING: "Running",
@@ -35,6 +36,7 @@ class Player extends EngineObject {
     BEING_ATTACKED: "BeingAttacked",
     LIFTING_UP: "LiftingUp",
     ATTACKING: "Attacking",
+    DYING: "Dying",
   };
   constructor() {
     super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
@@ -48,8 +50,9 @@ class Player extends EngineObject {
     this.TimerInterval = 2;
     this.Timer = this.TimerInterval;
     this.State = Player.StateList.STANDING;
-    this.angle = 0;
-    this.Sprite = new SpritePlayer(this.pos, vec2(2, 6)); //1.57 es -90
+    this.Sprite = new SpritePlayer(this.pos, vec2(2, 6));
+
+    this.angle = 0; //1.57 es -90
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
     // this.localAngle = ;
   }
@@ -57,11 +60,8 @@ class Player extends EngineObject {
     this.settingSprites();
     this.inputs();
     this.setCamera();
-
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
-
-    // debugText(`Player Direction ${this.Direction}`, vec2(this.pos.x, 5));
     debugText(`State ${this.State}`, vec2(this.pos.x, 10));
     debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
     debugText(
@@ -69,18 +69,24 @@ class Player extends EngineObject {
       vec2(this.pos.x, 8)
     );
     this.restStamina();
-    this.movement();
+    this.machineState();
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
   }
-  run() {}
-  jump() {}
-  attack() {}
-  shake() {}
-  movement() {
-    if (this.State == Player.StateList.TRIPPING) {
-      this.trippingToTheGround();
+  machineState() {
+    if (this.NumberOfCompsognathusAboveYou > 0) {
+      this.State = Player.StateList.STANDING_DIFFICULT;
+    } else {
+      this.State = Player.StateList.STANDING;
     }
   }
+  run(vectorX) {
+    this.velocity.x += vectorX * (this.groundObject ? 0.1 : 0.01);
+  }
+  jump() {
+    this.velocity.y = 0.75;
+  }
+  attack() {}
+  shake() {}
   settingSprites() {
     this.Sprite.mirror = this.Direction > 0 ? true : false;
     this.Sprite.pos = vec2(this.pos.x, this.pos.y + 2);
@@ -89,6 +95,8 @@ class Player extends EngineObject {
   inputs() {
     let move = vec2(0, 0);
     let isJumping = false;
+    let isAttack = false;
+    let isShake = false;
     if (isTouchDevice) {
       touchGamepadEnable = true;
       isJumping = gamepadIsDown(0);
@@ -97,7 +105,6 @@ class Player extends EngineObject {
       move = keyDirection();
       isJumping = keyIsDown("Space");
     }
-
     this.velocity.x += move.x * (this.groundObject ? 0.1 : 0.01);
 
     if (this.groundObject && isJumping) {
@@ -209,8 +216,7 @@ class Compsognathus extends EngineObject {
     this.Status = "Follow";
   }
   update() {
-    debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 12));
-
+    // debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 12));
     this.movements();
   }
   movements() {
