@@ -55,7 +55,7 @@ class Player extends EngineObject {
     this.angle = 0; //1.57 es -90
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
     // this.localAngle = ;
-    this.currentState = FSM.PLAYER.STANDING;
+    this.CurrentState = FSM.PLAYER.STANDING;
     this.OldState = {};
   }
   update() {
@@ -63,22 +63,18 @@ class Player extends EngineObject {
     this.setCamera();
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
-    debugText(`State: ${this.currentState.name}.`, vec2(this.pos.x, 10));
-    debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
+    debugText(`State: ${this.CurrentState.name}.`, vec2(this.pos.x, 10));
+    // debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
     debugText(
       `Compsognathus ${this.NumberOfCompsognathusAboveYou}`,
       vec2(this.pos.x, 8)
     );
-    // 2. Delegar lógica de movimiento/acciones al estado actual
-    if (this.currentState.update) {
-      this.currentState.update(this);
+    // 1. Ejecutar lógica del estado actual (FSM)
+    // Asegúrate de que CurrentState sea la clave del objeto FSM
+    if (this.CurrentState && this.CurrentState.update) {
+      this.CurrentState.update(this);
     }
-    // 3. Inputs procesan cambios de estado
-    // this.inputs();
-
     this.restStamina();
-    this.machineState();
-
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
   }
   machineState() {
@@ -106,20 +102,7 @@ class Player extends EngineObject {
     let isJumping = false;
     let isAttack = false;
     let isShake = false;
-    if (isTouchDevice) {
-      touchGamepadEnable = true;
-      isJumping = gamepadIsDown(0);
-      move = gamepadStick(0);
-    } else {
-      move = keyDirection();
-      isJumping = keyIsDown("Space");
-    }
-    this.velocity.x += move.x * (this.groundObject ? 0.1 : 0.01);
 
-    if (this.groundObject && isJumping) {
-      this.velocity.y = 0.75;
-      this.State = Player.StateList.JUMPING;
-    }
     if (this.groundObject) {
       if (move.x !== 0) {
         this.State = Player.StateList.RUNNING;

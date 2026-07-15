@@ -12,8 +12,12 @@ const FSM = {
       name: "Standing Still",
       enter: (player) => {},
       update: (player) => {
+        // Transición explícita: si hay movimiento, cambiar a RUNNING
+        if (getMoves().Jumping) {
+          FSM.changeState(player, "JUMPING");
+        }
         if (MoveAxisXListener()) {
-          FSM.changeState(player, FSM.PLAYER.RUNNING);
+          FSM.changeState(player, "RUNNING");
         }
       },
       exit: (player) => {},
@@ -28,8 +32,16 @@ const FSM = {
     JUMPING: {
       //Saltar
       name: "Jumping",
-      enter: (player) => {},
-      update: (player) => {},
+      enter: (player) => {
+        if (player.groundObject) {
+          player.velocity.y = 0.75;
+        }
+      },
+      update: (player) => {
+        if (!getMoves().Jumping) {
+          FSM.changeState(player, "STANDING");
+        }
+      },
       exit: (player) => {},
     },
     FALLING: {
@@ -44,12 +56,12 @@ const FSM = {
       name: "Running",
       enter: (player) => {},
       update: (player) => {
-        if (MoveAxisXListener()) {
-          console.log("DEJE DE CORRER");
+        // Ejecutar movimiento
+        MoveAxisX(player);
 
-          FSM.changeState(player, FSM.PLAYER.STANDING);
-        } else {
-          MoveAxisX(player);
+        // Transición explícita: si no hay movimiento, volver a STANDING
+        if (!MoveAxisXListener()) {
+          FSM.changeState(player, "STANDING");
         }
       },
       exit: (player) => {},
@@ -166,42 +178,49 @@ const FSM = {
 
   // Función para manejar cambios de estado
   changeState: (entity, newStateName) => {
-    if (entity.State === newStateName) return;
-
-    // Ejecuta el exit del estado anterior
-    const oldState =
-      FSM.PLAYER[entity.State] || FSM.COMPSOGNATHUS[entity.State];
-    if (oldState && oldState.exit) oldState.exit(entity);
-    entity.OldState = oldState;
-    entity.State = newStateName;
-    console.log(entity.State.name);
-    if (entity.OldState) {
-      console.log(entity.OldState.name);
-    }
-
-    // Ejecuta el enter del nuevo estado
+    // Asegúrate de buscar el objeto del estado correcto
     const newState =
       FSM.PLAYER[newStateName] || FSM.COMPSOGNATHUS[newStateName];
-    if (newState && newState.enter) newState.enter(entity);
+    if (entity.CurrentState.name === newState.name) return;
+
+    // Ejecuta exit
+    if (entity.CurrentState.exit) entity.CurrentState.exit(entity);
+
+    entity.CurrentState = newState; // Asignamos el objeto, no un string
+
+    // Ejecuta enter
+    if (newState.enter) newState.enter(entity);
   },
 };
 const MoveAxisX = (entity) => {
-  let move = getMoves();
-  entity.velocity.x += move.x * (entity.groundObject ? 0.1 : 0.01);
+  let move = getMoves().moveAxisX;
+  if (entity && entity.velocity) {
+    entity.velocity.x += move.x * (entity.groundObject ? 0.1 : 0.01);
+  } else {
+    console.log("NO existe ENTITY");
+    console.log(entity);
+  }
 };
 const MoveAxisXListener = () => {
-  let move = getMoves();
+  let move = getMoves().moveAxisX;
   if (move.x == 0) {
     return false;
+  } else {
+    return true;
   }
-  return true;
 };
 const getMoves = () => {
   let move = vec2(0, 0);
+  let isJumping = false;
   if (isTouchDevice) {
+    touchGamepadEnable = true;
     move = gamepadStick(0);
+    isJumping = gamepadIsDown(0);
   } else {
     move = keyDirection();
+    isJumping = keyIsDown("Space");
   }
-  return move;
+
+  return { moveAxisX: move, Jumping: isJumping };
 };
+const IsJumping = () => {};
