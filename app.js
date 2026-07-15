@@ -56,7 +56,6 @@ class Player extends EngineObject {
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
     // this.localAngle = ;
     this.CurrentState = FSM.PLAYER.STANDING;
-    this.OldState = {};
   }
   update() {
     this.settingSprites();

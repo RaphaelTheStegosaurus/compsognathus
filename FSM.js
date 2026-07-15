@@ -38,8 +38,10 @@ const FSM = {
         }
       },
       update: (player) => {
-        if (!getMoves().Jumping) {
-          FSM.changeState(player, "STANDING");
+        // console.log(player.pos.y);
+        // console.log(player.velocity.y);
+        if (player.velocity.y < 0) {
+          FSM.changeState(player, "FALLING");
         }
       },
       exit: (player) => {},
@@ -48,7 +50,11 @@ const FSM = {
       //Regresando al suelo despues de saltar
       name: "Falling",
       enter: (player) => {},
-      update: (player) => {},
+      update: (player) => {
+        if (player.velocity.y == 0) {
+          FSM.changeState(player, "STANDING");
+        }
+      },
       exit: (player) => {},
     },
     RUNNING: {
