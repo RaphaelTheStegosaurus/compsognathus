@@ -237,8 +237,7 @@ const FSM = {
       name: "Follow the Player",
       enter: (compsognathus) => {},
       update: (compsognathus) => {
-        compsognathus.velocity.x =
-          compsognathus.GetValueDistance().Sign * compsognathus.ChaseSpeed;
+        compsognathus.follow();
         if (!compsognathus.IsItBehindHim()) {
           FSM.changeState(compsognathus, "KEEPING_DISTANCE");
           return;

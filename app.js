@@ -224,7 +224,9 @@ class Compsognathus extends EngineObject {
       (this.GetValueDistance().Distance > 0 && this.Player.Direction < 0)
     );
   }
-  follow() {}
+  follow() {
+    this.velocity.x = this.GetValueDistance().Sign * this.ChaseSpeed;
+  }
 
   keepDistance() {
     if (this.GetValueDistance().ABSDistance > 10) {
