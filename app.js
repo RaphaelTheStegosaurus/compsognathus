@@ -62,6 +62,7 @@ class Player extends EngineObject {
     this.setCamera();
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
+
     debugText(`State: ${this.CurrentState.name}.`, vec2(this.pos.x, 10));
     // debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
     debugText(
@@ -83,41 +84,11 @@ class Player extends EngineObject {
       this.State = Player.StateList.STANDING;
     }
   }
-  run(vectorX) {
-    this.velocity.x += vectorX * (this.groundObject ? 0.1 : 0.01);
-  }
-  jump() {
-    this.velocity.y = 0.75;
-  }
-  attack() {}
-  shake() {}
   settingSprites() {
     this.Sprite.mirror = this.Direction > 0 ? true : false;
     this.Sprite.pos = vec2(this.pos.x, this.pos.y + 2);
   }
-  trippingToTheGround() {}
-  inputs() {
-    let move = vec2(0, 0);
-    let isJumping = false;
-    let isAttack = false;
-    let isShake = false;
 
-    if (this.groundObject) {
-      if (move.x !== 0) {
-        this.State = Player.StateList.RUNNING;
-      } else if (!isJumping) {
-        this.State = Player.StateList.STANDING;
-      }
-    } else {
-      if (this.velocity.y > 0.05) {
-        this.State = Player.StateList.JUMPING;
-      } else if (this.velocity.y < -0.05) {
-        this.State = Player.StateList.FALLING;
-      }
-    }
-
-    this.turnDirection(move.x);
-  }
   turnDirection(directionX) {
     if (directionX == 0) {
       return;

@@ -13,6 +13,9 @@ const FSM = {
       enter: (player) => {},
       update: (player) => {
         // Transición explícita: si hay movimiento, cambiar a RUNNING
+        if (player.NumberOfCompsognathusAboveYou > 2) {
+          FSM.changeState(player, "STANDING_DIFFICULT");
+        }
         if (getMoves().Jumping) {
           FSM.changeState(player, "JUMPING");
         }
@@ -51,7 +54,7 @@ const FSM = {
       name: "Falling",
       enter: (player) => {},
       update: (player) => {
-        if (player.velocity.y == 0) {
+        if (player.groundObject) {
           FSM.changeState(player, "STANDING");
         }
       },
@@ -203,8 +206,7 @@ const MoveAxisX = (entity) => {
   if (entity && entity.velocity) {
     entity.velocity.x += move.x * (entity.groundObject ? 0.1 : 0.01);
   } else {
-    console.log("NO existe ENTITY");
-    console.log(entity);
+    console.warn("NO existe ENTITY");
   }
 };
 const MoveAxisXListener = () => {
@@ -218,15 +220,26 @@ const MoveAxisXListener = () => {
 const getMoves = () => {
   let move = vec2(0, 0);
   let isJumping = false;
+  let isShaking = false;
+  let isAttacking = false;
   if (isTouchDevice) {
     touchGamepadEnable = true;
     move = gamepadStick(0);
     isJumping = gamepadIsDown(0);
+    isAttacking = gamepadIsDown(1);
+    isShaking = gamepadIsDown(2);
   } else {
     move = keyDirection();
     isJumping = keyIsDown("Space");
+    isAttacking = keyIsDown("KeyR");
+    isShaking = keyIsDown("KeyE");
   }
 
-  return { moveAxisX: move, Jumping: isJumping };
+  return {
+    moveAxisX: move,
+    Jumping: isJumping,
+    Attacking: isAttacking,
+    Shaking: isShaking,
+  };
 };
 const IsJumping = () => {};
