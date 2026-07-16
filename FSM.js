@@ -242,6 +242,10 @@ const FSM = {
           FSM.changeState(compsognathus, "KEEPING_DISTANCE");
           return;
         }
+        if (compsognathus.GetValueDistance().ABSDistance <= 1.2) {
+          FSM.changeState(compsognathus, "CLIMBING_ONTO_PLAYER");
+          return;
+        }
       },
       exit: (compsognathus) => {},
     },
