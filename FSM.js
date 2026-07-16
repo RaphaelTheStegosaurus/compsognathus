@@ -1,10 +1,48 @@
 const FSM = {
   PLAYER: {
+    TURNING: {
+      name: "Turning",
+      enter: (player) => {
+        player.turningTimer = 0.2; // Duración de la animación en segundos
+        // Aquí dispararías tu animación de giro
+      },
+      update: (player) => {
+        player.turningTimer -= timeDelta;
+        if (player.turningTimer <= 0) {
+          // Invertir dirección real tras la animación
+          player.Direction *= -1;
+          // Volver a correr o al estado previo
+          FSM.changeState(player, "RUNNING");
+        }
+      },
+    },
     SHAKING_OFF: {
       //Sacudirse los compsognathus encima de el
       name: "Shaking Off",
-      enter: (player) => {},
-      update: (player) => {},
+      enter: (player) => {
+        player.PlayerShakeInterval = 1;
+      },
+      update: (player) => {
+        // Si ya no hay enemigos, volver a STANDING
+        if (player.NumberOfCompsognathusAboveYou === 0) {
+          FSM.changeState(player, "STANDING");
+          return;
+        }
+
+        // Si el jugador suelta el botón, volver a STANDING_DIFFICULT
+        if (!getMoves().Shaking) {
+          FSM.changeState(player, "STANDING_DIFFICULT");
+          return;
+        }
+
+        // Lógica de sacudida
+        if (player.PlayerShakeInterval <= 0) {
+          player.NumberOfCompsognathusAboveYou -= 1;
+          player.PlayerShakeInterval = 1;
+        } else {
+          player.PlayerShakeInterval -= timeDelta;
+        }
+      },
       exit: (player) => {},
     },
     STANDING: {
@@ -12,8 +50,7 @@ const FSM = {
       name: "Standing Still",
       enter: (player) => {},
       update: (player) => {
-        // Transición explícita: si hay movimiento, cambiar a RUNNING
-        if (player.NumberOfCompsognathusAboveYou > 2) {
+        if (player.NumberOfCompsognathusAboveYou >= 3) {
           FSM.changeState(player, "STANDING_DIFFICULT");
         }
         if (getMoves().Jumping) {
@@ -29,11 +66,19 @@ const FSM = {
       //ESTANDO QUIETO CON DIFICULTAD
       name: "Standing Still With Difficult",
       enter: (player) => {},
-      update: (player) => {},
+      update: (player) => {
+        if (MoveAxisXListener()) {
+          FSM.changeState(player, "WALKING_DIFFICULT");
+          return;
+        }
+        if (getMoves().Shaking) {
+          FSM.changeState(player, "SHAKING_OFF");
+          return;
+        }
+      },
       exit: (player) => {},
     },
     JUMPING: {
-      //Saltar
       name: "Jumping",
       enter: (player) => {
         if (player.groundObject) {
@@ -41,8 +86,6 @@ const FSM = {
         }
       },
       update: (player) => {
-        // console.log(player.pos.y);
-        // console.log(player.velocity.y);
         if (player.velocity.y < 0) {
           FSM.changeState(player, "FALLING");
         }
@@ -79,7 +122,15 @@ const FSM = {
       //Caminando CON DIFICULTAD
       name: "Walking With Difficult",
       enter: (player) => {},
-      update: (player) => {},
+      update: (player) => {
+        //ACOMODAR EL LIMITANTE DE VELOCIDAD
+        MoveAxisX(player, 0.25);
+        // console.log(player.velocity.x);
+        if (!MoveAxisXListener()) {
+          FSM.changeState(player, "STANDING_DIFFICULT");
+          return;
+        }
+      },
       exit: (player) => {},
     },
     TRIPPING: {
@@ -201,13 +252,14 @@ const FSM = {
     if (newState.enter) newState.enter(entity);
   },
 };
-const MoveAxisX = (entity) => {
+const MoveAxisX = (entity, limit = 1) => {
   let move = getMoves().moveAxisX;
   if (entity && entity.velocity) {
-    entity.velocity.x += move.x * (entity.groundObject ? 0.1 : 0.01);
+    entity.velocity.x += move.x * limit * (entity.groundObject ? 0.1 : 0.01);
   } else {
     console.warn("NO existe ENTITY");
   }
+  entity.turnDirection(move.x);
 };
 const MoveAxisXListener = () => {
   let move = getMoves().moveAxisX;
@@ -242,4 +294,3 @@ const getMoves = () => {
     Shaking: isShaking,
   };
 };
-const IsJumping = () => {};

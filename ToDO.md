@@ -26,3 +26,8 @@
 
 ## Bugs
 - [x] El compsognatus cuando saltas sobre el desaparece
+
+NEW TODOS 
+- [ ] CREACION DE MAQUINA DE ESTADOS FSM
+- [ ] ADAPTANDO TODO EL CODIGO ANTERIOR
+- [ ] SEGUIR CON LAS TAREAS PENDIENTES

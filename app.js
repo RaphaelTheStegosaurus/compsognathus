@@ -56,6 +56,8 @@ class Player extends EngineObject {
     // this.angleVelocity = 0.001;//agrega momento angular osea gira
     // this.localAngle = ;
     this.CurrentState = FSM.PLAYER.STANDING;
+    this.PlayerShakeInterval = 1;
+    this.turningTimer = 0;
   }
   update() {
     this.settingSprites();
@@ -90,11 +92,19 @@ class Player extends EngineObject {
   }
 
   turnDirection(directionX) {
-    if (directionX == 0) {
+    // Restricción: Si no estamos en el suelo, ignoramos el cambio de dirección
+    if (directionX == 0 || !this.groundObject) {
       return;
     }
-    this.Direction = directionX < 0 ? -1 : 1;
-    return;
+    const newDirection = directionX < 0 ? -1 : 1;
+    if (this.Direction !== newDirection) {
+      // Si estamos corriendo, lanzamos la transición, si estamos quietos, giramos directo
+      if (this.CurrentState.name === "Running") {
+        FSM.changeState(this, "TURNING");
+      } else {
+        this.Direction = newDirection;
+      }
+    }
   }
   setCamera() {
     cameraPos.x = this.pos.x;
