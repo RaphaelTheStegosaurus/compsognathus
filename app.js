@@ -224,18 +224,13 @@ class Compsognathus extends EngineObject {
       (this.GetValueDistance().Distance > 0 && this.Player.Direction < 0)
     );
   }
-  follow(moveVector, _Distance) {
-    this.velocity.x = moveVector * this.ChaseSpeed;
-  }
 
   keepDistance(moveVector, _Distance) {
     if (_Distance > 10) {
       this.follow(moveVector, _Distance);
     } else if (_Distance > 9) {
-      this.Status = "Stay Front You";
       this.velocity.x = 0;
     } else {
-      this.Status = "Keep Distance";
       this.velocity.x = moveVector * (1.5 * this.ChaseSpeed) * -1;
     }
   }
