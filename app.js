@@ -42,14 +42,19 @@ class Player extends EngineObject {
     super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
     this.setCollision();
     this.Direction = 1;
+
     this.Health = 100;
     this.Stamina = 100;
     this.HealthBar = new BarComponent({ x: 5, y: 5 }, RED);
     this.StaminaBar = new BarComponent({ x: 5, y: 12 }, GREEN);
+
     this.NumberOfCompsognathusAboveYou = 0;
+
     this.TimerInterval = 2;
     this.Timer = this.TimerInterval;
+
     this.State = Player.StateList.STANDING;
+
     this.Sprite = new SpritePlayer(this.pos, vec2(2, 6));
 
     this.angle = 0; //1.57 es -90
@@ -78,13 +83,6 @@ class Player extends EngineObject {
     }
     this.restStamina();
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
-  }
-  machineState() {
-    if (this.NumberOfCompsognathusAboveYou > 0) {
-      this.State = Player.StateList.STANDING_DIFFICULT;
-    } else {
-      this.State = Player.StateList.STANDING;
-    }
   }
   settingSprites() {
     this.Sprite.mirror = this.Direction > 0 ? true : false;

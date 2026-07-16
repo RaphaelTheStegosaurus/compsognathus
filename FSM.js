@@ -3,15 +3,13 @@ const FSM = {
     TURNING: {
       name: "Turning",
       enter: (player) => {
-        player.turningTimer = 0.2; // Duración de la animación en segundos
+        player.turningTimer = 0.2;
         // Aquí dispararías tu animación de giro
       },
       update: (player) => {
         player.turningTimer -= timeDelta;
         if (player.turningTimer <= 0) {
-          // Invertir dirección real tras la animación
           player.Direction *= -1;
-          // Volver a correr o al estado previo
           FSM.changeState(player, "RUNNING");
           return;
         }
@@ -24,19 +22,14 @@ const FSM = {
         player.PlayerShakeInterval = 1;
       },
       update: (player) => {
-        // Si ya no hay enemigos, volver a STANDING
         if (player.NumberOfCompsognathusAboveYou === 0) {
           FSM.changeState(player, "STANDING");
           return;
         }
-
-        // Si el jugador suelta el botón, volver a STANDING_DIFFICULT
         if (!getMoves().Shaking) {
           FSM.changeState(player, "STANDING_DIFFICULT");
           return;
         }
-
-        // Lógica de sacudida
         if (player.PlayerShakeInterval <= 0) {
           player.NumberOfCompsognathusAboveYou -= 1;
           player.PlayerShakeInterval = 1;
@@ -116,10 +109,7 @@ const FSM = {
       name: "Running",
       enter: (player) => {},
       update: (player) => {
-        // Ejecutar movimiento
         MoveAxisX(player);
-
-        // Transición explícita: si no hay movimiento, volver a STANDING
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING");
           return;
@@ -132,9 +122,7 @@ const FSM = {
       name: "Walking With Difficult",
       enter: (player) => {},
       update: (player) => {
-        //ACOMODAR EL LIMITANTE DE VELOCIDAD
         MoveAxisX(player, 1 / (player.NumberOfCompsognathusAboveYou + 1));
-        // console.log(player.velocity.x);
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING_DIFFICULT");
           return;
