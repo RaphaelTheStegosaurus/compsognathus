@@ -51,7 +51,7 @@ class Player extends EngineObject {
     this.NumberOfCompsognathusAboveYou = 0;
 
     this.TimerInterval = 2;
-    this.Timer = this.TimerInterval;
+    this.Timer = 1;
 
     this.State = Player.StateList.STANDING;
 
@@ -81,7 +81,6 @@ class Player extends EngineObject {
     if (this.CurrentState && this.CurrentState.update) {
       this.CurrentState.update(this);
     }
-    this.restStamina();
     // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
   }
   settingSprites() {
@@ -115,15 +114,28 @@ class Player extends EngineObject {
   addCompsognathusAboveYou() {
     this.NumberOfCompsognathusAboveYou = this.NumberOfCompsognathusAboveYou + 1;
   }
-  restStamina() {
+  restStamina(stamina = 0) {
     this.Timer -= timeDelta;
     if (this.Timer < 0) {
       if (this.Stamina > 0) {
-        this.Stamina -= this.NumberOfCompsognathusAboveYou;
+        if (this.NumberOfCompsognathusAboveYou === 0) {
+          this.Stamina -= 1 + stamina;
+        } else {
+          this.Stamina -= this.NumberOfCompsognathusAboveYou * 2;
+        }
       } else {
-        this.State = Player.StateList.TRIPPING;
+        this.CurrentState = FSM.PLAYER.TRIPPING;
       }
-      this.Timer = this.TimerInterval;
+      this.Timer = 1;
+    }
+  }
+  restore() {
+    this.Timer -= timeDelta;
+    if (this.Timer < 0) {
+      if (this.Stamina < 100) {
+        this.Stamina += 1;
+      }
+      this.Timer = 1;
     }
   }
 }

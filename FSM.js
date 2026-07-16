@@ -19,6 +19,7 @@ const FSM = {
       //Sacudirse los compsognathus encima de el
       name: "Shaking Off",
       enter: (player) => {
+        player.Stamina -= 5;
         player.PlayerShakeInterval = 1;
       },
       update: (player) => {
@@ -44,6 +45,7 @@ const FSM = {
       name: "Standing Still",
       enter: (player) => {
         player.velocity.x = 0;
+        player.Timer = 1;
       },
       update: (player) => {
         if (player.NumberOfCompsognathusAboveYou >= 3) {
@@ -58,14 +60,18 @@ const FSM = {
           FSM.changeState(player, "RUNNING");
           return;
         }
+        player.restore();
       },
       exit: (player) => {},
     },
     STANDING_DIFFICULT: {
       //ESTANDO QUIETO CON DIFICULTAD
       name: "Standing Still With Difficult",
-      enter: (player) => {},
+      enter: (player) => {
+        player.Timer = 1;
+      },
       update: (player) => {
+        player.restStamina();
         if (MoveAxisXListener()) {
           FSM.changeState(player, "WALKING_DIFFICULT");
           return;
@@ -81,6 +87,7 @@ const FSM = {
       name: "Jumping",
       enter: (player) => {
         if (player.groundObject) {
+          player.Stamina -= 10;
           player.velocity.y = 0.75;
         }
       },
@@ -107,9 +114,12 @@ const FSM = {
     RUNNING: {
       //Corriendo
       name: "Running",
-      enter: (player) => {},
+      enter: (player) => {
+        player.Timer = 1;
+      },
       update: (player) => {
         MoveAxisX(player);
+        player.restStamina(2);
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING");
           return;
@@ -120,8 +130,11 @@ const FSM = {
     WALKING_DIFFICULT: {
       //Caminando CON DIFICULTAD
       name: "Walking With Difficult",
-      enter: (player) => {},
+      enter: (player) => {
+        player.Timer = 1;
+      },
       update: (player) => {
+        player.restStamina(2);
         MoveAxisX(player, 1 / (player.NumberOfCompsognathusAboveYou + 1));
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING_DIFFICULT");
