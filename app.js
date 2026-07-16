@@ -63,6 +63,8 @@ class Player extends EngineObject {
     this.CurrentState = FSM.PLAYER.STANDING;
     this.PlayerShakeInterval = 1;
     this.turningTimer = 0;
+    this.wasShaking = false;
+    this.wasAttacking = false;
   }
   update() {
     this.settingSprites();
@@ -136,6 +138,12 @@ class Player extends EngineObject {
         this.Stamina += 1;
       }
       this.Timer = 1;
+    }
+  }
+  mashRecovery(button1, button2) {
+    // Verificamos si ambos están presionados
+    if (button1 && button2) {
+      this.Stamina = Math.min(this.Stamina + 0.5, 100); // Recuperación rápida
     }
   }
 }

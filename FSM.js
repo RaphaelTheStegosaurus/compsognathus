@@ -146,22 +146,74 @@ const FSM = {
     TRIPPING: {
       //TROPEZANDO por agotamiento
       name: "Tripping To The Ground",
-      enter: (player) => {},
-      update: (player) => {},
+      enter: (player) => {
+        player.Timer = 5;
+      },
+      update: (player) => {
+        player.Timer -= timeDelta;
+        if (player.Timer <= 0) {
+          FSM.changeState(player, "BEING_ATTACKED");
+          return;
+        }
+      },
       exit: (player) => {},
     },
     BEING_ATTACKED: {
-      //Siendo Atacado
+      //Siendo Atacado y suelo
       name: "Being Attacked",
-      enter: (player) => {},
-      update: (player) => {},
+      enter: (player) => {
+        player.Timer = 1;
+      },
+      update: (player) => {
+        // 1. Lógica de daño constante
+        player.Timer -= timeDelta;
+        if (player.Timer <= 0) {
+          player.Health -= 5; // Cantidad de daño por segundo
+          player.Timer = 1; // Reinicia el timer para el próximo segundo
+        }
+
+        // 2. Transición a muerte
+        if (player.Health <= 0) {
+          FSM.changeState(player, "DYING");
+          return;
+        }
+        // 3. Lógica de recuperación (tu código actual)
+        const currentMoves = getMoves();
+
+        // Detectar si se acaba de presionar (flanco de subida)
+        const justPressedShaking = currentMoves.Shaking && !player.wasShaking;
+        const justPressedAttacking =
+          currentMoves.Attacking && !player.wasAttacking;
+
+        if (justPressedShaking || justPressedAttacking) {
+          // Solo sumamos si el botón fue presionado en este instante preciso
+          player.Stamina = Math.min(player.Stamina + 2, 100);
+        }
+
+        // Actualizar estados anteriores para el siguiente frame
+        player.wasShaking = currentMoves.Shaking;
+        player.wasAttacking = currentMoves.Attacking;
+
+        if (player.Stamina >= 50) {
+          FSM.changeState(player, "LIFTING_UP");
+        }
+      },
       exit: (player) => {},
     },
     LIFTING_UP: {
       //Levantándose del Suelo
       name: "Lifting Up",
-      enter: (player) => {},
-      update: (player) => {},
+      enter: (player) => {
+        player.Timer = 5;
+        player.NumberOfCompsognathusAboveYou = 0;
+      },
+      update: (player) => {
+        player.Timer -= timeDelta;
+        if (player.Timer <= 0) {
+          FSM.changeState(player, "STANDING");
+          return;
+        }
+      },
       exit: (player) => {},
     },
     ATTACKING: {
