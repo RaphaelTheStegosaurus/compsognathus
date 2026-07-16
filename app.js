@@ -201,44 +201,31 @@ class Compsognathus extends EngineObject {
     this.Direction = 1;
     this.ChaseSpeed = 0.08;
     this.Status = "Follow";
+    this.CurrentState = FSM.COMPSOGNATHUS.FOLLOWING_PLAYER;
   }
   update() {
-    // debugText(`Status ${this.Status}`, vec2(this.Player.pos.x, 12));
-    this.movements();
-  }
-  movements() {
-    const Distance = Math.abs(this.GetValueDistance());
-    const dirToPlayer = sign(this.Player.pos.x - this.pos.x);
-    if (this.IsItBehindHim()) {
-      this.follow(dirToPlayer, Distance);
-    } else {
-      this.keepDistance(dirToPlayer, Distance);
+    debugText(
+      `COMPSOGNATHUS STATE: ${this.CurrentState.name}`,
+      vec2(this.Player.pos.x, 12)
+    );
+    if (this.CurrentState && this.CurrentState.update) {
+      this.CurrentState.update(this);
     }
   }
   GetValueDistance() {
-    return this.pos.x - this.Player.pos.x;
+    const distance = this.pos.x - this.Player.pos.x;
+    const ABSdistance = Math.abs(distance);
+    const sign = Math.sign(this.Player.pos.x - this.pos.x);
+    return { Distance: distance, ABSDistance: ABSdistance, Sign: sign };
   }
   IsItBehindHim() {
     return (
-      (this.GetValueDistance() < 0 && this.Player.Direction > 0) ||
-      (this.GetValueDistance() > 0 && this.Player.Direction < 0)
-    );
-  }
-  checkIfPlayerIsNotJumpingOrAttacking() {
-    return !(
-      this.Player.State == Player.StateList.JUMPING ||
-      this.Player.State == Player.StateList.FALLING
+      (this.GetValueDistance().Distance < 0 && this.Player.Direction > 0) ||
+      (this.GetValueDistance().Distance > 0 && this.Player.Direction < 0)
     );
   }
   follow(moveVector, _Distance) {
-    this.Status = "Follow";
     this.velocity.x = moveVector * this.ChaseSpeed;
-    if (
-      _Distance < this.size.x * 2 &&
-      this.checkIfPlayerIsNotJumpingOrAttacking()
-    ) {
-      this.attack();
-    }
   }
 
   keepDistance(moveVector, _Distance) {
@@ -290,8 +277,8 @@ function gameInit() {
   new GroundManager();
   const player = new Player();
   new Compsognathus(vec2(40, 10), player);
-  new Compsognathus(vec2(50, 10), player);
-  new Compsognathus(vec2(60, 10), player);
+  // new Compsognathus(vec2(50, 10), player);
+  // new Compsognathus(vec2(60, 10), player);
   canvasClearColor = hsl(0.6, 0.5, 0.5);
 }
 ///////////////////////////////////////////////////////////////////////////////
