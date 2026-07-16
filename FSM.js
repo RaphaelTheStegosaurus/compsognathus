@@ -13,6 +13,7 @@ const FSM = {
           player.Direction *= -1;
           // Volver a correr o al estado previo
           FSM.changeState(player, "RUNNING");
+          return;
         }
       },
     },
@@ -48,16 +49,21 @@ const FSM = {
     STANDING: {
       //ESTANDO QUIETO
       name: "Standing Still",
-      enter: (player) => {},
+      enter: (player) => {
+        player.velocity.x = 0;
+      },
       update: (player) => {
         if (player.NumberOfCompsognathusAboveYou >= 3) {
           FSM.changeState(player, "STANDING_DIFFICULT");
+          return;
         }
         if (getMoves().Jumping) {
           FSM.changeState(player, "JUMPING");
+          return;
         }
         if (MoveAxisXListener()) {
           FSM.changeState(player, "RUNNING");
+          return;
         }
       },
       exit: (player) => {},
@@ -88,6 +94,7 @@ const FSM = {
       update: (player) => {
         if (player.velocity.y < 0) {
           FSM.changeState(player, "FALLING");
+          return;
         }
       },
       exit: (player) => {},
@@ -99,6 +106,7 @@ const FSM = {
       update: (player) => {
         if (player.groundObject) {
           FSM.changeState(player, "STANDING");
+          return;
         }
       },
       exit: (player) => {},
@@ -114,6 +122,7 @@ const FSM = {
         // Transición explícita: si no hay movimiento, volver a STANDING
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING");
+          return;
         }
       },
       exit: (player) => {},
@@ -124,7 +133,7 @@ const FSM = {
       enter: (player) => {},
       update: (player) => {
         //ACOMODAR EL LIMITANTE DE VELOCIDAD
-        MoveAxisX(player, 0.25);
+        MoveAxisX(player, 1 / (player.NumberOfCompsognathusAboveYou + 1));
         // console.log(player.velocity.x);
         if (!MoveAxisXListener()) {
           FSM.changeState(player, "STANDING_DIFFICULT");
@@ -256,6 +265,12 @@ const MoveAxisX = (entity, limit = 1) => {
   let move = getMoves().moveAxisX;
   if (entity && entity.velocity) {
     entity.velocity.x += move.x * limit * (entity.groundObject ? 0.1 : 0.01);
+    const MAX_SPEED = 1;
+    entity.velocity.x = Math.max(
+      Math.min(entity.velocity.x, MAX_SPEED),
+      -MAX_SPEED
+    );
+    console.log(entity.velocity.x);
   } else {
     console.warn("NO existe ENTITY");
   }
