@@ -251,17 +251,7 @@ const FSM = {
       name: "Keep its Distance",
       enter: (compsognathus) => {},
       update: (compsognathus) => {
-        if (compsognathus.GetValueDistance().ABSDistance > 10) {
-          compsognathus.velocity.x =
-            compsognathus.GetValueDistance().Sign * compsognathus.ChaseSpeed;
-        } else if (compsognathus.GetValueDistance().ABSDistance > 9) {
-          compsognathus.velocity.x = 0;
-        } else {
-          compsognathus.velocity.x =
-            compsognathus.GetValueDistance().Sign *
-            (1.5 * compsognathus.ChaseSpeed) *
-            -1;
-        }
+        compsognathus.keepDistance();
         if (compsognathus.IsItBehindHim()) {
           FSM.changeState(compsognathus, "FOLLOWING_PLAYER");
           return;
