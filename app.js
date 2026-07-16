@@ -91,13 +91,11 @@ class Player extends EngineObject {
   }
 
   turnDirection(directionX) {
-    // Restricción: Si no estamos en el suelo, ignoramos el cambio de dirección
     if (directionX == 0 || !this.groundObject) {
       return;
     }
     const newDirection = directionX < 0 ? -1 : 1;
     if (this.Direction !== newDirection) {
-      // Si estamos corriendo, lanzamos la transición, si estamos quietos, giramos directo
       if (this.CurrentState.name === "Running") {
         FSM.changeState(this, "TURNING");
       } else {
@@ -141,9 +139,8 @@ class Player extends EngineObject {
     }
   }
   mashRecovery(button1, button2) {
-    // Verificamos si ambos están presionados
     if (button1 && button2) {
-      this.Stamina = Math.min(this.Stamina + 0.5, 100); // Recuperación rápida
+      this.Stamina = Math.min(this.Stamina + 0.5, 100);
     }
   }
 }

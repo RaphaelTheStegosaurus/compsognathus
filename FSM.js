@@ -168,8 +168,9 @@ const FSM = {
         // 1. Lógica de daño constante
         player.Timer -= timeDelta;
         if (player.Timer <= 0) {
-          player.Health -= 5; // Cantidad de daño por segundo
-          player.Timer = 1; // Reinicia el timer para el próximo segundo
+          player.Stamina -= 5;
+          player.Health -= 5;
+          player.Timer = 1;
         }
 
         // 2. Transición a muerte
@@ -186,7 +187,6 @@ const FSM = {
           currentMoves.Attacking && !player.wasAttacking;
 
         if (justPressedShaking || justPressedAttacking) {
-          // Solo sumamos si el botón fue presionado en este instante preciso
           player.Stamina = Math.min(player.Stamina + 2, 100);
         }
 
