@@ -265,8 +265,12 @@ const FSM = {
     CLIMBING_ONTO_PLAYER: {
       //Si se acerca al jugador por la espalda este pasara a trepar al instante
       name: "Climb onto the Players Back",
-      enter: (compsognathus) => {},
-      update: (compsognathus) => {},
+      enter: (compsognathus) => {
+        compsognathus.Player.addCompsognathusAboveYou();
+      },
+      update: (compsognathus) => {
+        compsognathus.climbOntoPlayer();
+      },
       exit: (compsognathus) => {},
     },
     RUNNING_AWAY: {

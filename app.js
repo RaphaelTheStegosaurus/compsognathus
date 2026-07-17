@@ -50,7 +50,6 @@ class Player extends EngineObject {
 
     this.NumberOfCompsognathusAboveYou = 0;
 
-    this.TimerInterval = 2;
     this.Timer = 1;
 
     this.State = Player.StateList.STANDING;
@@ -200,7 +199,6 @@ class Compsognathus extends EngineObject {
     this.Player = player;
     this.Direction = 1;
     this.ChaseSpeed = 0.08;
-    this.Status = "Follow";
     this.CurrentState = FSM.COMPSOGNATHUS.FOLLOWING_PLAYER;
   }
   update() {
@@ -241,10 +239,15 @@ class Compsognathus extends EngineObject {
         this.GetValueDistance().Sign * (1.5 * this.ChaseSpeed) * -1;
     }
   }
-  attack() {
-    this.Status = "Its Attacking You";
-    this.Player.addCompsognathusAboveYou();
-    this.destroy();
+  climbOntoPlayer() {
+    console.log("me estoy ejecutando");
+    this.gravityScale = 0.25;
+    this.isSolid = false;
+
+    // this.pos.y = this.Player.pos.y + 0.5;
+    this.pos.y = this.Player.pos.y + 1;
+    this.pos.x = this.Player.pos.x - this.Player.size.x / 4;
+    // this.destroy();
   }
 }
 class BarComponent extends UIScrollbar {
