@@ -166,12 +166,7 @@ const FSM = {
       },
       update: (player) => {
         // 1. Lógica de daño constante
-        player.Timer -= timeDelta;
-        if (player.Timer <= 0) {
-          player.Stamina -= 5;
-          player.Health -= 5;
-          player.Timer = 1;
-        }
+        player.takeDamageOverTime();
 
         // 2. Transición a muerte
         if (player.Health <= 0) {

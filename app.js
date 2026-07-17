@@ -64,6 +64,7 @@ class Player extends EngineObject {
     this.turningTimer = 0;
     this.wasShaking = false;
     this.wasAttacking = false;
+    this.Ammo = 5;
   }
   update() {
     this.settingSprites();
@@ -140,6 +141,14 @@ class Player extends EngineObject {
   mashRecovery(button1, button2) {
     if (button1 && button2) {
       this.Stamina = Math.min(this.Stamina + 0.5, 100);
+    }
+  }
+  takeDamageOverTime() {
+    this.Timer -= timeDelta;
+    if (this.Timer <= 0) {
+      this.Stamina -= 5;
+      this.Health -= 5;
+      this.Timer = 1;
     }
   }
 }
@@ -240,7 +249,6 @@ class Compsognathus extends EngineObject {
     }
   }
   climbOntoPlayer() {
-    console.log("me estoy ejecutando");
     this.gravityScale = 0.25;
     this.isSolid = false;
 
