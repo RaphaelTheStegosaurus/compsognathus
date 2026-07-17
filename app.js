@@ -25,40 +25,17 @@ function getScrollBarSize(width, height, unityX, unityY) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 class Player extends EngineObject {
-  static StateList = {
-    STANDING: "StandingStill",
-    STANDING_DIFFICULT: "StandingStillWithDifficult",
-    JUMPING: "Jumping",
-    FALLING: "Falling",
-    RUNNING: "Running",
-    RUNNING_DIFFICULT: "RunningWithDifficult",
-    TRIPPING: "TrippingToTheGround",
-    BEING_ATTACKED: "BeingAttacked",
-    LIFTING_UP: "LiftingUp",
-    ATTACKING: "Attacking",
-    DYING: "Dying",
-  };
   constructor() {
     super(vec2(50, 10), vec2(1, 2), null, 0, GREEN);
     this.setCollision();
     this.Direction = 1;
-
     this.Health = 100;
     this.Stamina = 100;
     this.HealthBar = new BarComponent({ x: 5, y: 5 }, RED);
     this.StaminaBar = new BarComponent({ x: 5, y: 12 }, GREEN);
-
     this.NumberOfCompsognathusAboveYou = 0;
-
     this.Timer = 1;
-
-    this.State = Player.StateList.STANDING;
-
     this.Sprite = new SpritePlayer(this.pos, vec2(2, 6));
-
-    this.angle = 0; //1.57 es -90
-    // this.angleVelocity = 0.001;//agrega momento angular osea gira
-    // this.localAngle = ;
     this.CurrentState = FSM.PLAYER.STANDING;
     this.PlayerShakeInterval = 1;
     this.turningTimer = 0;
@@ -72,18 +49,14 @@ class Player extends EngineObject {
     this.StaminaBar.adjustValue(this.Stamina);
     this.HealthBar.adjustValue(this.Health);
 
-    debugText(`State: ${this.CurrentState.name}.`, vec2(this.pos.x, 10));
-    // debugText(`Player posY ${this.pos.y}`, vec2(this.pos.x, 6));
+    debugText(`Player State: ${this.CurrentState.name}.`, vec2(this.pos.x, 10));
     debugText(
       `Compsognathus ${this.NumberOfCompsognathusAboveYou}`,
       vec2(this.pos.x, 8)
     );
-    // 1. Ejecutar lógica del estado actual (FSM)
-    // Asegúrate de que CurrentState sea la clave del objeto FSM
     if (this.CurrentState && this.CurrentState.update) {
       this.CurrentState.update(this);
     }
-    // debugText(`Mouse ${mousePosScreen}`, vec2(this.pos.x, 7.5));
   }
   settingSprites() {
     this.Sprite.mirror = this.Direction > 0 ? true : false;
